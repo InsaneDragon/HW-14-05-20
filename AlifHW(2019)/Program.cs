@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AlifHW_2019_
@@ -8,113 +10,68 @@ namespace AlifHW_2019_
     {
         static void Main(string[] args)
         {
-            Console.ForegroundColor = ConsoleColor.White;
-            while (true)
+            int number = 123456789;
+            ShowReversedNum(number);
+            List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            ShowCountAndSum(list);
+            ShowSortedList(new List<string>() { "Svetnie", "Grob", "Grobkhop" });
+            ShowUniq(new List<double>() {1,2,3,3,6,2,1,5,5});
+            Console.ReadKey();
+        }
+        static void ShowReversedNum(int number)
+        {
+            var CharList = number.ToString().ToCharArray();
+            var list2 = from l in CharList.Reverse()
+                        select l;
+            foreach (var item in list2)
             {
-                Console.WriteLine("Choose Operation");
-                Console.WriteLine("1.Create");
-                Console.WriteLine("2.Read");
-                Console.WriteLine("3.Update");
-                Console.WriteLine("4.Delete");
-                Console.Write("Choice:");
-                string x = Console.ReadLine();
-                switch (x)
-                {
-                    case "1":
-                        {
-                            Console.Clear();
-                            Console.Write("Name:");
-                            string Name = Console.ReadLine();
-                            Create(Name);
-                            Console.Clear();
-                        }
-                        break;
-                    case "2":
-                        {
-                            Console.Clear();
-                            Read();
-                        }
-                        break;
-                    case "3":
-                        {
-                            Console.Clear();
-                            Read();
-                            Console.Write("ID:");
-                            int id = int.Parse(Console.ReadLine());
-                            Console.Write("Name(Updated):");
-                            string Name = Console.ReadLine();
-                            Update(id,Name);
-                        }
-                        break;
-
-                    case "4":
-                        {
-                            Console.Clear();
-                            Console.Write("ID:");
-                            int id = int.Parse(Console.ReadLine());
-                            Delete(id);
-                        }
-                        break;
-                }
+                Console.Write(item);
             }
         }
-        static void Create(string Name)
+        static void ShowCountAndSum(List<int> list)
         {
-            using (var context = new TestContext())
+            var list1 = from item in list
+                        where item > 0
+                        select item;
+            var list2 = from item in list
+                        where item < 0
+                        select item;
+            Console.WriteLine();
+            Console.WriteLine("Count:" + list1.ToList().Count);
+            Console.WriteLine("Sum:" + list2.Sum());
+        }
+        static void ShowSortedList(List<string> list)
+        {
+            var list2 = from item in list
+                        orderby item.Length
+                        select item;
+            Console.WriteLine("Sorted List:");
+            foreach (var item in list2)
             {
-                context.Add(new Person { Name = Name });
-                context.SaveChanges();
+                Console.WriteLine(item);
             }
         }
-        static void Read()
+        static void ShowUniq(List<double> list)
         {
-            using (var context = new TestContext())
+            List<double> Not = new List<double>();
+            for (int i = 0; i < list.Count; i++)
             {
-                var list = context.Person.ToList();
-                foreach (var item in list)
+                for (int y = 1; y < list.Count; y++)
                 {
-                    Console.WriteLine("ID:" + item.Id + " Name:" + item.Name);
+                    if (list[i]==list[y]&&i!=y)
+                    {
+                        Not.Add(i);
+                        break;
+                    }
                 }
             }
-        }
-        static void Update(int id,string name)
-        {
-            using (var context = new TestContext())
+            foreach (var item in Not)
             {
-                var Person = context.Person.Where(p => p.Id == id).FirstOrDefault();
-                if (Person == null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("There is no Person with this id");
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-                else
-                {
-                    Person.Name = name;
-                    context.Entry(Person).State = EntityState.Modified;
-                    context.SaveChanges();
-                }
+                list.RemoveAll(x=>x==item);
             }
-        }
-        static void Delete(int id)
-        {
-            using (var context = new TestContext())
+            if (list.Count > 0)
             {
-                var Person = context.Person.Where(p => p.Id == id).FirstOrDefault();
-                if (Person == null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("There is no Person with this id");
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-                else
-                {
-                    context.Remove(Person);
-                    context.SaveChanges();
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Person was removed successfully");
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
+                Console.WriteLine(list[0]);
             }
         }
     }
