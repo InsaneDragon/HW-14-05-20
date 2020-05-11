@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Schema;
 
 namespace AlifHW_2019_
 {
@@ -15,7 +16,7 @@ namespace AlifHW_2019_
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             ShowCountAndSum(list);
             ShowSortedList(new List<string>() { "Svetnie", "Grob", "Grobkhop" });
-            ShowUniq(new List<double>() {1,2,3,3,6,2,1,5,5});
+            ShowUniq(new List<double>() {11,2,11,23,23,44,2});
             Console.ReadKey();
         }
         static void ShowReversedNum(int number)
@@ -53,25 +54,10 @@ namespace AlifHW_2019_
         }
         static void ShowUniq(List<double> list)
         {
-            List<double> Not = new List<double>();
-            for (int i = 0; i < list.Count; i++)
+            var Uniqlist = list.GroupBy(x => x);
+            foreach (var item in Uniqlist)
             {
-                for (int y = 1; y < list.Count; y++)
-                {
-                    if (list[i]==list[y]&&i!=y)
-                    {
-                        Not.Add(i);
-                        break;
-                    }
-                }
-            }
-            foreach (var item in Not)
-            {
-                list.RemoveAll(x=>x==item);
-            }
-            if (list.Count > 0)
-            {
-                Console.WriteLine(list[0]);
+                if (item.ToList().Count==1){Console.WriteLine(item.Key);}
             }
         }
     }
