@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Schema;
 
 namespace AlifHW_2019_
@@ -54,11 +55,8 @@ namespace AlifHW_2019_
         }
         static void ShowUniq(List<double> list)
         {
-            var Uniqlist = list.GroupBy(x => x);
-            foreach (var item in Uniqlist)
-            {
-                if (item.ToList().Count==1){Console.WriteLine(item.Key);}
-            }
+            var Uniqlist = list.GroupBy(x => x).Where(p => p.ToList().Count == 1).Select(p=>p.Key);
+            Console.WriteLine(Uniqlist.ToList()[0]);
         }
     }
 }
