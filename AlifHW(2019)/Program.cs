@@ -2,9 +2,12 @@
 using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Schema;
+using System.Threading;
+using System.Reflection.PortableExecutable;
 
 namespace AlifHW_2019_
 {
@@ -12,51 +15,94 @@ namespace AlifHW_2019_
     {
         static void Main(string[] args)
         {
-            int number = 123456789;
-            ShowReversedNum(number);
-            List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            ShowCountAndSum(list);
-            ShowSortedList(new List<string>() { "Svetnie", "Grob", "Grobkhop" });
-            ShowUniq(new List<double>() {11,2,11,23,23,44,2});
-            Console.ReadKey();
-        }
-        static void ShowReversedNum(int number)
-        {
-            var CharList = number.ToString().ToCharArray();
-            var list2 = from l in CharList.Reverse()
-                        select l;
-            foreach (var item in list2)
+            ////////////////////////////////////////////1
+            string word = "hello";
+            var CodedWord = Code(word);
+            Console.Write("Coded:"+CodedWord);
+            Console.WriteLine();
+            ////////////////////////////////////////////2
+            var UnCodeLetters = UnCode(CodedWord);
+            Console.Write("Unccoded:"+UnCodeLetters);
+            Console.WriteLine();
+            ////////////////////////////////////////////3
+            string Dirt = "fgv2hbk4lf;11+dasd1vk56";
+            var Clear=CleanString(Dirt);
+            Console.WriteLine(Dirt+" => "+Clear[3]);
+            Console.WriteLine($"Cause {Clear[0]} {Clear[2]} {Clear[1]} = {Clear[3]}");
+            ////////////////////////////////////////////4
+            string Camel = "camelCase";
+            var list1 = Camel.Select(x=>x.ToString());
+            var x = 0;
+            var list = list1.Select(x => char.IsUpper(char.Parse(x))?" "+x:x);
+            foreach (var item in list)
             {
                 Console.Write(item);
             }
         }
-        static void ShowCountAndSum(List<int> list)
+        static string Code(string word)
         {
-            var list1 = from item in list
-                        where item > 0
-                        select item;
-            var list2 = from item in list
-                        where item < 0
-                        select item;
-            Console.WriteLine();
-            Console.WriteLine("Count:" + list1.ToList().Count);
-            Console.WriteLine("Sum:" + list2.Sum());
-        }
-        static void ShowSortedList(List<string> list)
-        {
-            var list2 = from item in list
-                        orderby item.Length
-                        select item;
-            Console.WriteLine("Sorted List:");
-            foreach (var item in list2)
+            List<char> Alphabet = new List<char>() { '0', 'a', 'e', 'i', 'o', 'u', 'y' };
+            var list = word.ToArray().Select(x => Alphabet.Contains(x) ? char.Parse(Alphabet.IndexOf(x).ToString()) : x);
+            StringBuilder code = new StringBuilder();
+            foreach (var item in list)
             {
-                Console.WriteLine(item);
+                code.Append(item);
             }
+            word = code.ToString();
+            return word;
         }
-        static void ShowUniq(List<double> list)
+        static string UnCode(string word)
         {
-            var Uniqlist = list.GroupBy(x => x).Where(p => p.ToList().Count == 1).Select(p=>p.Key);
-            Console.WriteLine(Uniqlist.ToList()[0]);
+            int isNum = 0;
+            List<char> Alphabet = new List<char>() { '0', 'a', 'e', 'i', 'o', 'u', 'y' };
+            var list = word.ToArray().Select(x => int.TryParse(x.ToString(), out isNum) ? char.Parse(Alphabet[isNum].ToString()) : x);
+            StringBuilder code = new StringBuilder();
+            foreach (var item in list)
+            {
+                code.Append(item);
+            }
+            word = code.ToString();
+            return word;
+        }
+        static List<string> CleanString(string word)
+        {
+            int first = 0;
+            List<char> symbols = new List<char>() { '+', '-', '/', '*' };
+            var list = from item in word
+                       where int.TryParse(item.ToString(), out first) || symbols.Contains(item)
+                       select item;
+            var Symbol = from item in list
+                         where symbols.Contains(item)
+                         select item;
+            var SymbolIndex = list.ToList().IndexOf(Symbol.ToArray()[0]);
+            var FirstNum = from item in list
+                           where list.IndexOf(item) < SymbolIndex
+                           select item;
+            var SecondNum = from item in list
+                            where list.IndexOf(item) > SymbolIndex
+                            select item;
+            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder2 = new StringBuilder();
+            foreach (var item in FirstNum)
+            {
+                stringBuilder.Append(item);
+            }
+            foreach (var item in SecondNum)
+            {
+                stringBuilder2.Append(item);
+            }
+            double result = 0;
+            int firstnum = int.Parse(stringBuilder.ToString());
+            int secondnum = int.Parse(stringBuilder2.ToString());
+            char action = Symbol.ToArray()[0];
+            switch (action)
+            {
+                case '-': result = firstnum - secondnum; break;
+                case '*': result = firstnum * secondnum; break;
+                case '/': result = firstnum / secondnum; break;
+                case '+': result = firstnum + secondnum; break;
+            }
+            return new List<string>() { firstnum.ToString(), secondnum.ToString(),action.ToString(), result.ToString() };
         }
     }
 }
