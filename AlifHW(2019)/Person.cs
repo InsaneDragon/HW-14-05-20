@@ -7,5 +7,5 @@ namespace AlifHW_2019_
     {
         public int Id { get; set; }
         public string Name { get; set; }
-    }
+    }   
 }
